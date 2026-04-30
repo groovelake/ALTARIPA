@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Menù — Altaripa Ristorante</title>
+  <meta name="description" content="Menù del ristorante Altaripa. Crudi, sashimi, tartare, antipasti, primi, secondi e dessert. Cucina di mare sul lago di Garda." />
+  <meta name="robots" content="index, follow" />
+
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary:         #154d55;
+      --bg-gradient:        linear-gradient(160deg, #1a5f69 0%, #154d55 50%, #0f3a40 100%);
+      --bg-surface:         rgba(255,255,255,0.06);
+      --bg-surface-hover:   rgba(255,255,255,0.09);
+      --color-white:        #ffffff;
+      --color-muted:        rgba(255,255,255,0.5);
+      --color-border:       rgba(255,255,255,0.12);
+      --btn-primary-bg:     #ffffff;
+      --btn-primary-text:   #154d55;
+      --font-body:          'Montserrat', sans-serif;
+      --radius-card:        6px;
+      --radius-btn:         3px;
+      --transition:         0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--bg-primary);
+      background-image: var(--bg-gradient);
+      color: var(--color-white);
+      font-family: var(--font-body);
+      font-weight: 300;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .skip-link {
+      position: absolute; top: -40px; left: 0;
+      background: var(--color-white); color: var(--bg-primary);
+      padding: 8px 16px; font-size: 12px; z-index: 9999; transition: top 0.2s;
+    }
+    .skip-link:focus { top: 0; }
+
+    /* ── BACK BUTTON ── */
+    #back-btn {
+      position: fixed; top: 14px; left: 14px; z-index: 1000;
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 13px;
+      background: rgba(10, 42, 47, 0.88);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: var(--radius-btn);
+      backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+      color: rgba(255,255,255,0.75);
+      font-family: var(--font-body); font-size: 10px; font-weight: 400;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      text-decoration: none; cursor: pointer;
+      transition: background var(--transition), color var(--transition);
+    }
+    #back-btn:hover { background: rgba(255,255,255,0.1); color: var(--color-white); }
+    #back-btn svg { width: 12px; height: 12px; }
+
+    /* ── HEADER ── */
+    header {
+      width: 100%; display: flex; flex-direction: column; align-items: center;
+      padding: 28px 20px 16px;
+    }
+    header::after {
+      content: ''; display: block; width: 1px; height: 26px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.22), transparent);
+      margin: 12px auto 0;
+    }
+    .logo-wrap { width: min(240px, 58vw); }
+    .logo-wrap img { width: 100%; height: auto; display: block; }
+    .tagline {
+      font-size: 10px; font-weight: 300; letter-spacing: 0.38em;
+      color: rgba(255,255,255,0.45); text-transform: uppercase; margin-top: 10px;
+    }
+
+    /* ── MAIN ── */
+    main {
+      flex: 1; width: 100%; max-width: 680px;
+      margin: 0 auto; padding: 0 14px 64px;
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-title {
+      text-align: center; padding: 0 0 28px;
+    }
+    .page-title h1 {
+      font-size: clamp(20px, 5vw, 32px); font-weight: 300;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--color-white); line-height: 1.1;
+    }
+    .page-title p {
+      font-size: 10px; font-weight: 300; letter-spacing: 0.28em;
+      color: rgba(255,255,255,0.4); text-transform: uppercase; margin-top: 8px;
+    }
+
+    /* ── MENU SECTION (accordion) ── */
+    .menu-section {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      margin-bottom: 10px;
+      background: var(--bg-surface);
+    }
+
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 18px;
+      cursor: pointer;
+      user-select: none;
+      transition: background var(--transition);
+      border: none; width: 100%; text-align: left;
+      background: transparent; color: var(--color-white);
+      font-family: var(--font-body);
+    }
+    .section-header:hover { background: var(--bg-surface-hover); }
+    .section-header:focus-visible { outline: 2px solid var(--color-white); outline-offset: -2px; }
+
+    .section-header-left {
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .section-name {
+      font-size: 12px; font-weight: 500;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--color-white);
+    }
+    .section-sub {
+      font-size: 9px; font-weight: 300;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+    }
+    .chevron {
+      width: 16px; height: 16px; flex-shrink: 0;
+      transition: transform var(--transition);
+      opacity: 0.5;
+    }
+    .menu-section.open .chevron { transform: rotate(180deg); }
+
+    .section-body {
+      display: none;
+      padding: 0 18px 18px;
+      border-top: 1px solid var(--color-border);
+    }
+    .menu-section.open .section-body { display: block; }
+
+    /* ── DISH ITEM ── */
+    .dish {
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .dish:last-child { border-bottom: none; padding-bottom: 0; }
+    .dish:first-child { padding-top: 16px; }
+
+    .dish-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 12px; margin-bottom: 4px;
+    }
+    .dish-name {
+      font-size: 12px; font-weight: 400;
+      letter-spacing: 0.06em; color: var(--color-white); line-height: 1.3;
+      flex: 1;
+    }
+    .dish-price {
+      font-size: 12px; font-weight: 400;
+      letter-spacing: 0.04em; color: var(--color-white);
+      white-space: nowrap; flex-shrink: 0;
+    }
+    .dish-translations {
+      font-size: 10px; font-weight: 300;
+      letter-spacing: 0.04em; color: rgba(255,255,255,0.42);
+      line-height: 1.6; margin-top: 3px;
+    }
+    .dish-translations em {
+      font-style: normal; display: block;
+    }
+
+    /* ── PLATEAU / CAVIALE special ── */
+    .dish-variants {
+      margin-top: 8px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .dish-variant {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; font-weight: 300;
+      letter-spacing: 0.06em; color: rgba(255,255,255,0.7);
+      padding: 5px 10px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 3px;
+    }
+
+    /* ── COPERTO ── */
+    .coperto-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 18px;
+      border-top: 1px solid var(--color-border);
+      font-size: 10px; font-weight: 400;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+    }
+    .coperto-row span:last-child { color: var(--color-white); }
+
+    /* ── ALLERGENI ── */
+    .allergeni-section {
+      margin-top: 20px;
+      padding: 18px;
+      background: var(--bg-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-card);
+    }
+    .allergeni-title {
+      font-size: 10px; font-weight: 500;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(255,255,255,0.6); margin-bottom: 12px;
+    }
+    .allergeni-note {
+      font-size: 9px; font-weight: 300;
+      letter-spacing: 0.06em; color: rgba(255,255,255,0.38);
+      line-height: 1.7; margin-bottom: 10px;
+    }
+    .allergeni-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 16px;
+    }
+    .allergene {
+      font-size: 9px; font-weight: 300;
+      letter-spacing: 0.04em; color: rgba(255,255,255,0.45);
+      line-height: 1.6;
+    }
+    .allergene strong { color: rgba(255,255,255,0.7); font-weight: 400; }
+
+    /* ── STICKY CTA ── */
+    .sticky-cta {
+      position: sticky; bottom: 16px;
+      margin: 24px 0 0;
+      z-index: 100;
+    }
+    .btn-prenota {
+      display: flex; align-items: center; justify-content: center;
+      gap: 8px; width: 100%; padding: 15px 20px;
+      border-radius: var(--radius-btn);
+      background: var(--btn-primary-bg);
+      color: var(--btn-primary-text);
+      font-family: var(--font-body); font-size: 11px; font-weight: 500;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: background var(--transition), transform 0.15s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .btn-prenota:hover { background: rgba(255,255,255,0.88); }
+    .btn-prenota:active { transform: scale(0.98); }
+    .btn-prenota:focus-visible { outline: 2px solid var(--color-white); outline-offset: 2px; }
+    .btn-prenota svg { width: 14px; height: 14px; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--color-border); padding: 24px 20px; text-align: center; }
+    .footer-sep { width: 1px; height: 22px; background: rgba(255,255,255,0.12); margin: 0 auto 18px; }
+    .footer-info { font-size: 9px; font-weight: 300; letter-spacing: 0.18em; color: rgba(255,255,255,0.35); line-height: 2; text-transform: uppercase; }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main-content">Vai al contenuto</a>
+
+  <a href="ristorante.html" id="back-btn" aria-label="Torna al ristorante">
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 3L5 8l5 5"/>
+    </svg>
+    Ristorante
+  </a>
+
+  <header role="banner">
+    <div class="logo-wrap">
+      <img src="assets/logo.png" alt="Altaripa The Club" width="240" height="92" />
+    </div>
+    <p class="tagline">Menù Ristorante</p>
+  </header>
+
+  <main id="main-content">
+
+    <div class="page-title">
+      <h1>Il Menù</h1>
+      <p>Cucina di mare · Lago di Garda</p>
+    </div>
+
+    <!-- ══ RAW DISHES ══ -->
+    <div class="menu-section open">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="true">
+        <div class="section-header-left">
+          <span class="section-name">Crudi</span>
+          <span class="section-sub">Raw Dishes · Rohe Gerichte</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Ostriche Gillardeau n.3</span>
+            <span class="dish-price">8 € / cad</span>
+          </div>
+          <div class="dish-translations">
+            <em>Gillardeau Oysters n.3 · Gillardeau Austern n.3</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Gamberi rossi</span>
+            <span class="dish-price">8 € / cad</span>
+          </div>
+          <div class="dish-translations"><em>Red prawns · Rote Garnelen</em></div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Gamberi Viola</span>
+            <span class="dish-price">8 € / cad</span>
+          </div>
+          <div class="dish-translations"><em>Violet prawns · Violette Garnelen</em></div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Scampi</span>
+            <span class="dish-price">8 € / cad</span>
+          </div>
+          <div class="dish-translations"><em>Scampi</em></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ SASHIMI / CARPACCI ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Sashimi · Carpacci</span>
+          <span class="section-sub">Sashimi &amp; Carpaccio</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Sashimi di tonno</span>
+            <span class="dish-price">12 €</span>
+          </div>
+          <div class="dish-translations"><em>Tuna sashimi · Thunfisch Sashimi</em></div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Sashimi di ricciola</span>
+            <span class="dish-price">16 €</span>
+          </div>
+          <div class="dish-translations"><em>Amberjack sashimi · Kaiserforsch Sashimi</em></div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Carpaccio di salmone, salsa ponzu, lamponi</span>
+            <span class="dish-price">16 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Salmon carpaccio with ponzu sauce and raspberries</em>
+            <em>Lachs-Carpaccio mit Ponzu-Sauce und Himbeeren</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Branzino marinato, cetriolo e gel al gin tonic</span>
+            <span class="dish-price">22 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Marinated sea bass with marinated cucumber and gin tonic gel</em>
+            <em>Marinierter Wolfsbarsch mit Gurke und Gin-Tonic-Gel</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Carpaccio di gambero viola, gel di agrumi, salsa al finocchio e mela verde</span>
+            <span class="dish-price">26 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Red prawn carpaccio with citrus, fennel and green apple</em>
+            <em>Carpaccio von roten Garnelen mit Zitrusfrüchten, Fenchel und grünem Apfel</em>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ TARTARE ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Tartare</span>
+          <span class="section-sub">Tartare</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Tartare di ricciola, ceviche esotica</span>
+            <span class="dish-price">24 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Amberjack tartare, exotic ceviche</em>
+            <em>Bernsteinmakrelen-Tatar, exotisches Ceviche</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Tartare di gambero rosso, gazpacho di zucchine, robiola alle erbe</span>
+            <span class="dish-price">26 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Red prawn tartare, zucchini gazpacho, herb robiola cheese</em>
+            <em>Rote-Garnelen-Tatar, Zucchini-Gazpacho, Robiola mit Kräutern</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Tartare di scampo, pomodoro arrosto, origano, tapenade di olive</span>
+            <span class="dish-price">28 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Langoustine tartare, roasted tomato, oregano, olive tapenade</em>
+            <em>Kaisergranat-Tatar, geröstete Tomate, Oregano, Oliventapenade</em>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ PLATEAU ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Plateau</span>
+          <span class="section-sub">Platters · Platten</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+        <div class="dish">
+          <div class="dish-header"><span class="dish-name">Selezione di crudi e marinati</span></div>
+          <div class="dish-variants">
+            <div class="dish-variant"><span>Medium (2 pax)</span><span>100 €</span></div>
+            <div class="dish-variant"><span>Large (4 pax)</span><span>190 €</span></div>
+            <div class="dish-variant"><span>XL (6 pax)</span><span>290 €</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CAVIALE ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Caviale</span>
+          <span class="section-sub">Caviar · Kaviar</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+        <div class="dish">
+          <div class="dish-header"><span class="dish-name">Siberian Classic</span></div>
+          <div class="dish-variants">
+            <div class="dish-variant"><span>30 gr</span><span>60 €</span></div>
+            <div class="dish-variant"><span>50 gr</span><span>95 €</span></div>
+          </div>
+        </div>
+        <div class="dish">
+          <div class="dish-header"><span class="dish-name">Tradition Royal</span></div>
+          <div class="dish-variants">
+            <div class="dish-variant"><span>30 gr</span><span>90 €</span></div>
+            <div class="dish-variant"><span>50 gr</span><span>140 €</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ ANTIPASTI ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Antipasti</span>
+          <span class="section-sub">Starters · Vorspeisen</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Wafer di mais con baccalà mantecato, gel di cipolla agrodolce, mais tostato e salsa verde</span>
+            <span class="dish-price">16 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Corn wafer with creamed cod, sweet and sour onion gel, toasted corn and green sauce</em>
+            <em>Maiswaffel mit Stockfischcreme, süß-saurem Zwiebelgel, geröstetem Mais und grüner Sauce</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Capesante scottate su toast croccante, guacamole e confettura di pomodori</span>
+            <span class="dish-price">20 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Seared scallops on crispy toast with guacamole and tomato jam</em>
+            <em>Gebratene Jakobsmuscheln auf knusprigem Toast mit Guacamole und Tomatenkonfitüre</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Uovo pochè, fonduta di Parmigiano Reggiano e asparagi</span>
+            <span class="dish-price">14 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Poached egg with Parmigiano Reggiano fondue and asparagus</em>
+            <em>Pochiertes Ei mit Parmigiano-Reggiano-Fondue und Spargel</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Foie gras, panfrutto e gastrique alla ciliegia e riduzione al vino rosso</span>
+            <span class="dish-price">21 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Foie gras with brioche bread, cherries and red wine gastrique</em>
+            <em>Foie gras mit Brioche, Kirschen und Rotwein-Gastrique</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Carpaccio di manzo, maionese al pomodoro bruciato e cialde di patata dorate</span>
+            <span class="dish-price">22 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Beef carpaccio with burnt tomato mayonnaise and crispy potato</em>
+            <em>Rinder-Carpaccio mit geräucherter Tomatenmayonnaise und knusprigen Kartoffelchips</em>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ PRIMI ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Primi</span>
+          <span class="section-sub">First Courses · Erste Gänge</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Tagliolino alle vongole veraci e bottarga di Muggine</span>
+            <span class="dish-price">23 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Tagliolini with clams and bottarga</em>
+            <em>Tagliolini mit Venusmuscheln und Bottarga</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Spaghetto alla carbonara di tonno e katsuobushi</span>
+            <span class="dish-price">23 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Spaghetti with tuna carbonara and katsuobushi</em>
+            <em>Spaghetti Carbonara mit Thunfisch und Katsuobushi</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Ravioli cacio e pepe, emulsione al pepe di Cayenna e riccio di mare</span>
+            <span class="dish-price">24 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Cacio e pepe ravioli with cayenne pepper emulsion and sea urchin</em>
+            <em>Cacio-e-Pepe-Ravioli mit Cayennepfeffer-Emulsion und Seeigel</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Spaghetto al caviale Siberian classic, 10g</span>
+            <span class="dish-price">35 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Spaghetti with caviar (10 g)</em>
+            <em>Spaghetti mit Kaviar (10 g)</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Risotto alla crema di piselli e menta con formaggella di Tremosine allo zafferano</span>
+            <span class="dish-price">18 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Risotto with pea and mint cream, Tremosine cheese and saffron</em>
+            <em>Risotto mit Erbsen- und Minzcreme, Formaggella aus Tremosine und Safran</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Mezzo pacchero al ragout di cortile, funghi pioppini e Bagòss</span>
+            <span class="dish-price">22 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Mezzo pacchero pasta with white meat ragout, pioppini mushrooms and Bagòss cheese</em>
+            <em>Mezzo-Pacchero mit Ragout von weißem Fleisch, Pioppini-Pilzen und Bagòss-Käse</em>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ SECONDI ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Secondi</span>
+          <span class="section-sub">Main Courses · Hauptgänge</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Salmone in crosta di pane, emulsione ai capperi e finocchi marinati</span>
+            <span class="dish-price">26 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Salmon in bread crust, caper sauce and marinated fennel</em>
+            <em>Lachs in Brotkruste, Kapernsauce und marinierter Fenchel</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Gamberi in tempura, cremoso di ceci agli agrumi e gel al pompelmo</span>
+            <span class="dish-price">28 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Tempura prawns with creamy chickpeas and citrus gel</em>
+            <em>Tempura-Garnelen mit Kichererbsencreme und Zitrusgel</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Astice in burro cottura alla catalana, avocado e gel di ponzu</span>
+            <span class="dish-price">60 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Butter-poached lobster Catalan style with avocado and ponzu gel</em>
+            <em>In Butter gegarter Hummer katalanischer Art mit Avocado und Ponzu-Gel</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Verdure di stagione, tempeh di soia arrosto e spuma di vinaigrette al burro</span>
+            <span class="dish-price">20 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Seasonal vegetables in different textures with roasted soy tempeh and butter vinaigrette foam</em>
+            <em>Saisongemüse in verschiedenen Konsistenzen mit Soja-Tempeh und Butter-Vinaigrette-Schaum</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Tataki di manzo marinato, salsa BBQ e pannocchia arrosto</span>
+            <span class="dish-price">28 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Marinated beef tataki with BBQ sauce and roasted corn</em>
+            <em>Mariniertes Rindertataki mit BBQ-Sauce und geröstetem Mais</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Maialino da latte cotto a bassa temperatura, fondo allo sweet chili, terrina di patate e cipollotto arrosto</span>
+            <span class="dish-price">28 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Slow-cooked suckling pig with sweet chili sauce and potato and onion terrine</em>
+            <em>Langsam gegartes Spanferkel mit Sweet-Chili-Sauce und Kartoffel-Zwiebel-Terrine</em>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ CONTORNI ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Contorni</span>
+          <span class="section-sub">Side Dishes · Beilagen</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Patate al forno</span>
+            <span class="dish-price">9 €</span>
+          </div>
+          <div class="dish-translations"><em>Baked potato · Ofenkartoffel</em></div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Pak choi arrostito</span>
+            <span class="dish-price">9 €</span>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Biete ripassate</span>
+            <span class="dish-price">9 €</span>
+          </div>
+          <div class="dish-translations"><em>Sautéed chard · Gedünsteter Mangold</em></div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Insalata di finocchio, pomodorini, arancia e salsa esotica</span>
+            <span class="dish-price">11 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Fennel salad with cherry tomatoes, orange and exotic sauce</em>
+            <em>Fenchelsalat mit Kirschtomaten, Orange und exotischer Sauce</em>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ DESSERT ══ -->
+    <div class="menu-section">
+      <button class="section-header" onclick="toggleSection(this)" aria-expanded="false">
+        <div class="section-header-left">
+          <span class="section-name">Dessert</span>
+          <span class="section-sub">Desserts · Nachtisch</span>
+        </div>
+        <svg class="chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" xmlns="http://www.w3.org/2000/svg"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+      <div class="section-body">
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Babà "Litchous"</span>
+            <span class="dish-price">12 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Babà soffice, crema leggera alla rosa, lamponi e litchi</em>
+            <em>Baba with rose fragrance, raspberry and lychee · Baba mit Rosenaroma, Himbeere und Litschi</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Thai Garden <span style="font-size:9px;opacity:0.5;letter-spacing:0.1em">(VEG)</span></span>
+            <span class="dish-price">12 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Cocco cremoso, mango maturo, riso basmati dolce e profumo di lime kaffir</em>
+            <em>Creamy coconut, ripe mango, sweet basmati rice and kaffir lime · Cremige Kokosnuss, reife Mango, süßer Basmatireis</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Notte Italiana</span>
+            <span class="dish-price">12 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Cheesecake vellutata su base croccante al cioccolato, coulisse al caffè e gelato alla sambuca</em>
+            <em>Cheesecake with coffee espuma and sambuca ice cream · Schokoladen-Cheesecake mit Kaffee-Espuma und Sambuca-Eis</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Agrumi Preziosi</span>
+            <span class="dish-price">12 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Lemon tart con amaretto alle mandorle, marshmallow al cardamomo e confit di yuzu</em>
+            <em>Lemon tart with almond amaretto, cardamom marshmallow and yuzu confit · Zitronentarte mit Mandel-Amaretto und Yuzu</em>
+          </div>
+        </div>
+
+        <div class="dish">
+          <div class="dish-header">
+            <span class="dish-name">Sharing Pleasure</span>
+            <span class="dish-price">14 €</span>
+          </div>
+          <div class="dish-translations">
+            <em>Selezione di quattro mignon dessert da condividere</em>
+            <em>Selection of four mini desserts to share · Auswahl von vier Mini-Desserts zum Teilen</em>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- COPERTO + ACQUA -->
+    <div class="menu-section" style="margin-bottom:0">
+      <div class="coperto-row">
+        <span>Coperto · Cover charge · Gedeck</span>
+        <span>5 €</span>
+      </div>
+      <div class="coperto-row" style="border-top: 1px solid rgba(255,255,255,0.07)">
+        <span>Acqua Lurisia · Water · Wasser</span>
+        <span>4 €</span>
+      </div>
+    </div>
+
+    <!-- ALLERGENI -->
+    <div class="allergeni-section">
+      <p class="allergeni-title">Informazioni Allergeni</p>
+      <p class="allergeni-note">
+        Informazione alla clientela sugli allergeni alimentari (Reg. UE 1169/2011).
+        Le informazioni sulla presenza di sostanze o prodotti che provocano allergie o intolleranze
+        sono disponibili rivolgendosi al personale di servizio.<br/>
+        Possibili tracce di glutine, latte, frutta secca, arachidi e sedano in tutte le portate.
+      </p>
+      <div class="allergeni-grid">
+        <span class="allergene"><strong>1</strong> Glutine</span>
+        <span class="allergene"><strong>2</strong> Crostacei</span>
+        <span class="allergene"><strong>3</strong> Uova</span>
+        <span class="allergene"><strong>4</strong> Pesce</span>
+        <span class="allergene"><strong>5</strong> Arachidi</span>
+        <span class="allergene"><strong>6</strong> Soia</span>
+        <span class="allergene"><strong>7</strong> Latte</span>
+        <span class="allergene"><strong>8</strong> Frutta a guscio</span>
+        <span class="allergene"><strong>9</strong> Sedano</span>
+        <span class="allergene"><strong>10</strong> Senape</span>
+        <span class="allergene"><strong>11</strong> Sesamo</span>
+        <span class="allergene"><strong>12</strong> Solfiti</span>
+        <span class="allergene"><strong>13</strong> Lupini</span>
+        <span class="allergene"><strong>14</strong> Molluschi</span>
+      </div>
+    </div>
+
+    <!-- STICKY CTA -->
+    <div class="sticky-cta">
+      <a href="https://wa.me/message/OP6XDBXXT7TGB1"
+         class="btn-prenota"
+         target="_blank" rel="noopener"
+         aria-label="Prenota il tuo tavolo su WhatsApp">
+        <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 1C4.134 1 1 4.134 1 8c0 1.295.35 2.508.958 3.548L1 15l3.548-.958A6.963 6.963 0 0 0 8 15c3.866 0 7-3.134 7-7S11.866 1 8 1zm3.5 9.5c-.167.458-1.042.875-1.417.917-.375.042-.767.208-2.583-.583C5.833 10 4.917 8.333 4.833 8.208c-.083-.125-.667-.875-.667-1.667S4.667 5.5 4.875 5.25c.208-.25.417-.25.583-.25h.5c.167 0 .375.042.542.417l.708 1.583c.083.208.042.458-.083.583l-.292.333c-.083.125-.167.25-.042.5.125.25.583 1 1.25 1.625.833.75 1.5.958 1.708 1.042.208.083.333.042.458-.083l.417-.5c.167-.208.375-.167.625-.083l1.5.708c.25.125.417.208.417.458 0 .25-.167.708-.333 1.167z"/>
+        </svg>
+        Prenota il tuo tavolo
+      </a>
+    </div>
+
+  </main>
+
+  <footer role="contentinfo">
+    <div class="footer-sep" aria-hidden="true"></div>
+    <p class="footer-info">
+      Altaripa srl &nbsp;·&nbsp; Viale F. Agello 152 &nbsp;·&nbsp; 25015 Desenzano del Garda<br/>
+      P.I. 04254570981
+    </p>
+  </footer>
+
+  <script>
+    'use strict';
+    function toggleSection(btn) {
+      var section = btn.closest('.menu-section');
+      var isOpen  = section.classList.contains('open');
+      section.classList.toggle('open', !isOpen);
+      btn.setAttribute('aria-expanded', String(!isOpen));
+    }
+  </script>
+
+</body>
+</html>
